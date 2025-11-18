@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Analyzer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+            width: 400px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            resize: none;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #4e54c8;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: #4e54c8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #3b40a4;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        .result strong {
+            color: #333;
+        }
+
+        .emoji {
+            font-size: 2rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mental Health Analyzer</h1>
+        <textarea id="textInput" placeholder="Type how you feel..."></textarea>
+        <br>
+        <button onclick="analyzeText()">Analyze</button>
+
+        <div class="result" id="result"></div>
+        <div class="emoji" id="emoji"></div>
+    </div>
+
+    <script>
+        function getEmoji(prediction) {
+            const map = {
+                happiness: "😊",
+                sadness: "😢",
+                anger: "😡",
+                fear: "😨",
+                surprise: "😲",
+                neutral: "😐",
+                love: "❤️"
+            };
+            return map[prediction] || "🤔";
+        }
+
+        async function analyzeText() {
+            const text = document.getElementById("textInput").value.trim();
+            if (!text) {
+                alert("Please enter some text.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+
+                document.getElementById("result").innerHTML = `
+                    <strong>Prediction:</strong> ${data.prediction} <br>
+                    <strong>Confidence:</strong> ${(data.confidence).toFixed(2)}%
+                `;
+
+                document.getElementById("emoji").textContent = getEmoji(data.prediction);
+
+            } catch (error) {
+                document.getElementById("result").innerHTML = `<span style="color:red;">Error connecting to server.</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
