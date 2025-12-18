@@ -7,6 +7,8 @@ from contextlib import asynccontextmanager
 import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import os
+import uvicorn
 
 MODEL_NAME = "bhadresh-savani/distilbert-base-uncased-emotion"  
 MAX_LEN = 256
@@ -104,3 +106,8 @@ def analyze(input: InputText):
         "confidence": confidence,
         "probabilities": prob_dict,
     }
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

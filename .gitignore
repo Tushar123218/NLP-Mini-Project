@@ -33,3 +33,6 @@ Thumbs.db
 
 # Cache folders
 .cache/
+
+./backend/model/logistic_model.pkl
+./backend/model/tfidf_vectorizer.pkl
